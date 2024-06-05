@@ -1,7 +1,5 @@
-from sound import Sound
 import time
 import matplotlib.pyplot as plt
-import threading
 
 class WordGame:
 
@@ -13,7 +11,6 @@ class WordGame:
         self.list_of_correct_words = []
         self.list_of_incorrect_words = []
         self.instructions = self.get_instructions()
-        self.sound = Sound() # make instance of sound class
 
     def get_instructions(self):
         print(f"Welcome, {self.player}.")
@@ -104,8 +101,6 @@ class WordGame:
         start_time = time.time()
         total_seconds = 30
 
-        tick_tock_sound_thread = threading.Thread(target=self.sound.play_tick_tock)
-        tick_tock_sound_thread.start() # start thread
 
         while (time.time() - start_time < total_seconds):  # while 30 seconds haven't elapsed yet
             # player will keep on getting the same first letter and they could input anything else for the rest
@@ -116,11 +111,6 @@ class WordGame:
                 input(f"{random_starting_letters}")
             if word not in self.current_word_list:  # so no doubles
                 self.current_word_list.append(word)
-
-        self.sound.stop_sound()
-        tick_tock_sound_thread.join() #make sure thread finishes before continuing with main and having alarm sound
-
-        self.sound.play_alarm()
 
         print("Time is up!\n\n")
         time.sleep(1)
