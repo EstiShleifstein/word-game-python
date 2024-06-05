@@ -26,8 +26,8 @@ class Words:
                 dict_of_all_beginnings[first_two_letters].append(word)
 
         filtered_dict = {
-            key: value_list for key, value_list in dict_of_all_beginnings.items() if len(value_list) >= 300}
-        # only use the first 2 letters that actually have enough to go on -- did loop with counter and there are 174 options for this condition
+            key: value_list for key, value_list in dict_of_all_beginnings.items() if len(value_list) >= 500}
+        # only use the first 2 letters that actually have enough to go on 
         return filtered_dict
 
     def get_random_first_two_letters(self):
@@ -38,3 +38,5 @@ class Words:
 
     def get_first_two_letters_for_all(self):
         pass
+
+
