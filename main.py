@@ -1,15 +1,13 @@
 import time
-import random
 import matplotlib.pyplot as plt
-from winsound import Beep
 import threading
-import flet
+from winsound import Beep
+import random
 
 class Player:
 
     def __init__(self):
-        self.name = input(
-            "Welcome to the game! Please Enter Your Name to Start:\n")
+        self.name = input("Welcome to the game! Please Enter Your Name to Start:\n")
         self.list_of_scores = []
 
     def __str__(self):
@@ -24,8 +22,7 @@ class Player:
             return max(self.list_of_scores)
         except ValueError:
             return "Oops! No scores yet."
-
-
+        
 class Words:
 
     def __init__(self):
@@ -81,13 +78,12 @@ class Sound:
         self.playing = False
 
     def play_alarm(self):
-        for _ in range(10):
+        for _ in range(5):
             Beep(2500,500)
             time.sleep(0.001)
-            Beep(2)
+            Beep(2500,500)
+            time.sleep(0.0001)
     
-
-# for game logic.
 class WordGame:
 
     def __init__(self, player, words):
@@ -205,10 +201,11 @@ class WordGame:
         self.sound.stop_sound()
         tick_tock_sound_thread.join() #make sure thread finishes before continuing with main and having alarm sound
 
-        self.sound.play_alarm()
 
         print("Time is up!\n\n")
-        time.sleep(1)
+        self.sound.play_alarm()
+
+        time.sleep(5)
         score = self.get_current_score()
         self.player.add_score_to_list(score)
         if score <= 50:
@@ -242,11 +239,14 @@ class WordGame:
         self.list_of_correct_words = []
         self.list_of_incorrect_words = []
 
+# for game logic.
 
 def main():
+
     player = Player()
     word = Words()
     game = WordGame(player, word)
+
     print(game.instructions)
 
     while True:
@@ -257,7 +257,7 @@ def main():
 
         while continue_playing_or_not not in ["yes", "no"]:
             continue_playing_or_not = input(
-                "Invalid response. Please enter 'yes' if you would like to cotinue playing and 'no' if you would like to stop")
+                "Invalid response. Please enter 'yes' if you would like to cotinue playing and 'no' if you would like to stop\n")
         if continue_playing_or_not == "no":
             print(f"Thank you for playing, {player.name}. Your high score is {
                   player.get_highest_score()}")
