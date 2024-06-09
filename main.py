@@ -1,39 +1,14 @@
-<<<<<<< HEAD
-import flet
-from player import Player
-from word import Words
-from game import WordGame
-=======
 import time
 import matplotlib.pyplot as plt
-import threading
+# import threading
 from winsound import Beep
 import random
 
-class Player:
 
-    def __init__(self):
-        self.name = input("Welcome to the game! Please Enter Your Name to Start:\n")
-        self.list_of_scores = []
-
-    def __str__(self):
-        return self.name
-
-    def add_score_to_list(self, number):
-        score = round(number, 2)
-        self.list_of_scores.append(score)
-
-    def get_highest_score(self):
-        try:
-            return max(self.list_of_scores)
-        except ValueError:
-            return "Oops! No scores yet."
-        
 class Words:
 
     def __init__(self):
         self.word_list = self.get_word_list()
-        # self.possible_beginnings =
 
     def get_word_list(self):
         with open("words_alpha.txt") as words:
@@ -55,8 +30,8 @@ class Words:
                 dict_of_all_beginnings[first_two_letters].append(word)
 
         filtered_dict = {
-            key: value_list for key, value_list in dict_of_all_beginnings.items() if len(value_list) >= 300}
-        # only use the first 2 letters that actually have enough to go on -- did loop with counter and there are 174 options for this condition
+            key: value_list for key, value_list in dict_of_all_beginnings.items() if len(value_list) >= 600}
+        # only use the first 2 letters that actually have enough to go on
         return filtered_dict
 
     def get_random_first_two_letters(self):
@@ -65,20 +40,40 @@ class Words:
         choice_of_first_two_letters = random.choice(list_of_first_choices)
         return choice_of_first_two_letters
 
-    def get_first_two_letters_for_all(self):
-        pass
+class Player:
+
+    def __init__(self):
+        self.name = input("Welcome to the game! Please Enter Your Name to Start:\n")
+        self.list_of_scores = []
+
+    def __str__(self):
+        return self.name
+
+    def add_score_to_list(self, number):
+        score = round(number, 2)
+        self.list_of_scores.append(score)
+
+    def get_highest_score(self):
+        try:
+            return max(self.list_of_scores)
+        except ValueError:
+            return "Oops! No scores yet."
+        
+
 
 class Sound:
     def __init__(self):
         self.playing = False
 
     def play_tick_tock(self):
+        start_time = time.time()
+        total_seconds = 30
+        
         self.playing = True
-        while self.playing:
-            Beep(600,300)
-            time.sleep(0.1)
-            Beep(800,300) #higher frequency sound
-            time.sleep(0.1)
+        while time.time() - start_time < total_seconds:
+            Beep(600,100)
+            Beep(800,100) #higher frequency sound 
+           
     
     def stop_sound(self):
         self.playing = False
@@ -86,9 +81,7 @@ class Sound:
     def play_alarm(self):
         for _ in range(5):
             Beep(2500,500)
-            time.sleep(0.001)
-            Beep(2500,500)
-            time.sleep(0.0001)
+            time.sleep(0.05)
     
 class WordGame:
 
@@ -100,7 +93,7 @@ class WordGame:
         self.list_of_correct_words = []
         self.list_of_incorrect_words = []
         self.instructions = self.get_instructions()
-        self.sound = Sound() # make instance of sound class
+        # self.sound = Sound() # make instance of sound class
 
     def get_instructions(self):
         print(f"Welcome, {self.player}.")
@@ -139,7 +132,8 @@ class WordGame:
         score = (correct_words_count / total_words) * 100  # out of 100
         return round(score, 2)
 
-    def display_results_for_round(self):
+    
+    def display_results_for_round(self, score):
         # getting length of each word
         length_of_each_word = [len(word)
                                for word in self.list_of_correct_words]
@@ -157,9 +151,10 @@ class WordGame:
 
         plt.bar(length_count_dict.keys(), length_count_dict.values())
         plt.xlabel("Word Length")
-        plt.ylabel("Number of Words")
-        plt.title(f"{self.player.name}'s Performance in Last Round (Total Correct Words: {
-                  len(self.list_of_correct_words)})")
+        plt.ylabel("Number of Words With That Length")
+        correct_words_text = ", ".join(self.list_of_correct_words)
+        incorrect_words_text = ", ".join(self.list_of_incorrect_words)
+        plt.title(f"{self.player.name.title()}'s Score: {score}\nTotal Correct Words: {len(self.list_of_correct_words)}\nList of Correct Words: {correct_words_text}\nList of Incorrect Words: {incorrect_words_text}\nOther Words You Could've Used: {self.available_words[:10]}")
         plt.show()
 
     def display_end_results(self):
@@ -169,7 +164,7 @@ class WordGame:
         x = [num+1 for num in range(len(y))]
 
         plt.plot(x, y, marker='o')
-        plt.title(f"{self.player.name}'s Scores Over Time")
+        plt.title(f"{self.player.name}'s Scores Over Time\nHighest Score: {self.player.get_highest_score()}")
         plt.xlabel('Game Number')
         plt.ylabel('Score')
         plt.ylim(0, 100)
@@ -191,27 +186,27 @@ class WordGame:
         start_time = time.time()
         total_seconds = 30
 
-        tick_tock_sound_thread = threading.Thread(target=self.sound.play_tick_tock)
-        tick_tock_sound_thread.start() # start thread
+        # tick_tock_sound_thread = threading.Thread(target=self.sound.play_tick_tock)
+        # tick_tock_sound_thread.start() # start thread
 
         while (time.time() - start_time < total_seconds):  # while 30 seconds haven't elapsed yet
             # player will keep on getting the same first letter and they could input anything else for the rest
             # this is to make is a complete word
-            print(f"Enter a word that begins with {random_starting_letters} ({
-                  round(total_seconds - (time.time() - start_time), 0)} seconds left!")
-            word = random_starting_letters + \
-                input(f"{random_starting_letters}")
-            if word not in self.current_word_list:  # so no doubles
-                self.current_word_list.append(word)
+            word = input(f"Enter a word that begins with {random_starting_letters} ({round(total_seconds - (time.time() - start_time), 0)} seconds left): \n{random_starting_letters}")
+            starting_letters = random_starting_letters # reset every time 
+            starting_letters += word
 
-        self.sound.stop_sound()
-        tick_tock_sound_thread.join() #make sure thread finishes before continuing with main and having alarm sound
+            if starting_letters not in self.current_word_list:  # so no doubles
+                self.current_word_list.append(starting_letters)
+
+        # self.sound.stop_sound()
+        # tick_tock_sound_thread.join() #make sure thread finishes before continuing with main and having alarm sound
 
 
         print("Time is up!\n\n")
-        self.sound.play_alarm()
+        # self.sound.play_alarm()
 
-        time.sleep(5)
+        time.sleep(1)
         score = self.get_current_score()
         self.player.add_score_to_list(score)
         if score <= 50:
@@ -238,15 +233,13 @@ class WordGame:
         print("\n\n")
         time.sleep(2)
 
-        self.display_results_for_round()
+        self.display_results_for_round(score)
 
-        # reset list for each round
+        # reset lists for each round
         self.current_word_list = []
         self.list_of_correct_words = []
         self.list_of_incorrect_words = []
->>>>>>> perfecting-alarm
 
-# for game logic.
 
 def main():
 
